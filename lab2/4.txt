@@ -1,0 +1,11 @@
+# Описание из man`а #
+	-E: Stop after the preprocessing stage; do not run the compiler proper.  The output is in the form of preprocessed source code, which is sent to the standard output.
+
+		Input files that don't require preprocessing are ignored.
+
+# Для чего используется #
+	-E, как я понял, останавливается после препроцессинга, то есть подставляет содержимое include`ов, делает подстановки макросов define и другие вещи, которые происходят на стадии препроцессинга.
+		После этого выдает содержимое подстановок + сам код в стандартный вывод (терминал).
+
+# Чем может быть полезен #
+	Не знаю чем это может быть полезным, но мне кажется, это может как-то помочь оптимизировать комплияцию больших проектов (не уверен).
