@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
+#include "main.h"
 
 int main() {
 	int er = 0;
