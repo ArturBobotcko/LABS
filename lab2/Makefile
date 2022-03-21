@@ -10,13 +10,13 @@
 4_test: 4_test.c
 	gcc -E 4_test.c
 
-1_glibc_ver.o: 1_glibc_ver.c main.h
+1_glibc_ver.o: 1_glibc_ver.c ../main.h
 	gcc -O0 -g3 -Wall -c 1_glibc_ver.c
 
-2_error.o: 2_error.c main.h
+2_error.o: 2_error.c ../main.h
 	gcc -O0 -g3 -Wall -c 2_error.c
 
-3_errors_generator.o: 3_errors_generator.c main.h
+3_errors_generator.o: 3_errors_generator.c ../main.h
 	gcc -O0 -g3 -Wall -c 3_errors_generator.c
 
 clean:
