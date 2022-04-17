@@ -1,0 +1,15 @@
+#!/bin/bash
+MAXCOUNT=$(shuf -i 50000-100000 -n 1)
+count=1
+cp /dev/null digits2.txt
+
+while [ "$count" -le $MAXCOUNT ]
+do
+	number=$RANDOM
+	echo -n $number >> digits2.txt
+	if [ $count -lt $MAXCOUNT ];
+	then
+		echo >> digits2.txt
+	fi
+	let "count += 1"
+done

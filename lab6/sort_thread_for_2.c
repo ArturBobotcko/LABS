@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	pthread_join(command_thread, (void*)&thr);
-
+	
 	if (close(fd) == -1) {
 		perror("close");
 		return -1;
