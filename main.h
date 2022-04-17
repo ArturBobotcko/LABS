@@ -10,6 +10,7 @@
 #include <unistd.h> /* Стандартные файловые дескрипторы и системные вызовы для манипуляций с файлами */
 #include <fcntl.h> /* Системные вызов creat() */
 #include <sys/wait.h> /* Системный вызов wait() */
+#include <pthread.h> /* Потоки */
 
 typedef enum { FALSE, TRUE } Boolean;
 
