@@ -92,7 +92,31 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	pthread_join(command_thread, (void*)&thr);
+	int iret, tryCount = 1;
+	label: 
+		iret = pthread_tryjoin_np(
+		command_thread,
+		NULL
+	);
+	if ((iret != 0) && (iret != EBUSY)) {
+		perror("pthread_tryjoin_np");
+		return -1;
+	}
+	if (iret == EBUSY) {
+		if (tryCount == 6) {
+			printf("The thread is busy. Returning...\n");
+			return 1;
+		}
+		printf("[%d]\n",tryCount);
+		
+		if (usleep(1000000) == -1) {
+			perror("usleep");
+			return -1;
+		}
+		tryCount++;
+		goto label;
+	}
+	if (iret == 0) {}
 	
 	if (close(fd) == -1) {
 		perror("close");
