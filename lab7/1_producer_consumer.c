@@ -1,91 +1,95 @@
 #include "../main.h"
 #include "stack.h"
+#include <semaphore.h>
+
+#define PRODUCER_NUM 2
+#define CONSUMER_NUM 2
+#define STACK_MAX 100
 
 pthread_mutex_t mutex;
+sem_t available_slots;
+sem_t occupied_slots;
 
-// void produce(Node* head) {
-	// pthread_mutex_lock(&mutex);
-	// srand(time(NULL));
-	// for (int i = 0; i < 2; i++) {
-	// 	args[i] = malloc(sizeof(int));
-	// 	if (args[i] == NULL) {
-	// 		printf("No memory\n");
-	// 		return;
-	// 	}
-	// }
-	// int a = rand() % 100;
-	// int b = rand() % 100;
-	// stack_add(head, a, b);
+stack* head = NULL;
+int stack_size = 0;
 
-	// pthread_mutex_unlock(&mutex);
-	// return;
-// }
-
-/*int consume(int* args[2]) {
-	int sum = 0;
-	for (int i = 0; i < 2; i++) {
-		sum += *(args[i]);
+void* producer() {
+	while(TRUE) {
+		int a = rand () % 100;
+		int b = rand () % 100;
+		sem_wait(&available_slots);
+		pthread_mutex_lock(&mutex);
+		head = PUSH(head, &a, &b, sizeof(int));
+		stack_size++;
+		pthread_mutex_unlock(&mutex);
+		sem_post(&occupied_slots);
 	}
-	return sum;
-}*/
+}
+
+void* consumer() {
+	while(TRUE) {
+		int a, b, c;
+		sem_wait(&occupied_slots);
+		pthread_mutex_lock(&mutex);
+		sleep(1);
+		head = POP(head, &a, &b, sizeof(int));
+		stack_size--;
+		c = a + b;
+		// printf("Количество занятых слотов: %d | %d + %d = %d\n", stack_size, a, b, c);
+		printf("%d + %d = %d\n", a, b, c);
+		pthread_mutex_unlock(&mutex);
+		sem_post(&available_slots);
+	}
+}
 
 int main(int argc, char* argv[]) {
-	stack* head = NULL;
-	// int a = 1;
-	// int b = 1;
+	srand(time(NULL));
+	int THREADS_NUM = PRODUCER_NUM + CONSUMER_NUM;
+	pthread_t threads[THREADS_NUM];
+	for (int i = 0; i < THREADS_NUM; i++) {
+		threads[i] = 0;
+	}
 
-	// head = PUSH(head,&a,&b,sizeof(int));
-	// a = 2;
-	// b = 2;
-	// head = PUSH(head,&a,&b,sizeof(int));
-
-	// print_stack(head);
-
-	/*pthread_t p1, p2;
-	int* args[2];
+	sem_init(&available_slots, 0, STACK_MAX);
+	sem_init(&occupied_slots, 0, 0);
 
 	pthread_mutex_init(&mutex, NULL);
+	int ret, i, j;
+	for (i = 0; i < PRODUCER_NUM; i++) {
+		ret = pthread_create(
+			&threads[i],
+			NULL,
+			&producer,
+			NULL
+		);
+		if (ret != 0) {
+			perror("Error creating a thread\n");
+			return -1;
+		}
+	}
 
-	int ret = pthread_create(
-		&p1,
-		NULL,
-		(void*)&produce,
-		stack
-	);
+	for (j = 0; j < CONSUMER_NUM; j++) {
+		ret = pthread_create(
+			&threads[j+i],
+			NULL,
+			&consumer,
+			NULL
+		);
+		if (ret != 0) {
+			perror("Error creating a thread\n");
+			return -1;
+		}
+	}
 
-	if (ret != 0) {
-		perror("Error creating a thread\n");
-		return -1;
-	}*/
-	
+	for (int i = 0; i < THREADS_NUM; i++) {
+		if (pthread_join(threads[i], NULL) != 0) {
+			perror("Error joining a thread\n");
+			return -1;
+		}
+	}
 
-	// ret = pthread_create(
-	// 	&p2,
-	// 	NULL,
-	// 	(void*)&consume,
-	// 	args
-	// );
-
-	// if (ret != 0) {
-	// 	perror("Error creating a thread\n");
-	// 	return -1;
-	// }
-	
-	// if (pthread_join(p1, NULL) != 0) {
-	// 	perror("Error joinig a thread\n");
-	// 	return -2;
-	// }
-
-	// if (pthread_join(p2, (void**)&ret) != 0) {
-	// 	perror("Error joinig a thread\n");
-	// 	return -2;
-	// }
-
-
-
-	//printf("%d\n", ret);
-
-
-	// pthread_mutex_destroy(&mutex);
+	sem_destroy(&available_slots);
+	sem_destroy(&occupied_slots);
+	pthread_mutex_destroy(&mutex);
 	return 0;
 }
