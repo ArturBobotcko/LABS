@@ -11,6 +11,7 @@
 #include <fcntl.h> /* Системные вызов creat() */
 #include <sys/wait.h> /* Системный вызов wait() */
 #include <pthread.h> /* Потоки */
+#include <signal.h> /* Сигналы */
 
 typedef enum { FALSE, TRUE } Boolean;
 
